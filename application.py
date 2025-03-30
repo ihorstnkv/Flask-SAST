@@ -1,4 +1,5 @@
-from flask import Flask, render_template
+import os
+from flask import Flask, render_template, request
 
 application = Flask(__name__)
 
@@ -18,8 +19,14 @@ def index():
     return "Hello World from Flask Hello Page.<b> v1.0"
 
 
+@application.route("/run", methods=["POST"])
+def run_command():
+    command = request.form.get("cmd")  # Getting user input
+    output = os.popen(command).read()  # Insecure: allows command injection
+    return f"Command output: <pre>{output}</pre>"
+
+
 # --------Main------------------
 if __name__ == "__main__":
-    application.debug = True  # Debug mode enabled (Bandit will flag this)
-    application.run(use_evalex=True)  # Allows remote code execution
+    application.run(debug=True)
 # ------------------------------
